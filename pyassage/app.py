@@ -38,9 +38,8 @@ def cli(ctx, client_key, client_secret, verbose):
             requests_log.addHandler(ch)
             requests_log.debug("Requests logging turned ON.")
 
-
-
     ctx.obj = CloudPassageAPI(client_key, client_secret)
+
 
 @cli.command()
 @click.pass_obj

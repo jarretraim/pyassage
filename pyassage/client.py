@@ -6,7 +6,7 @@ Simple Python API client for the CloudPassage API.
 
 import base64
 import logging
-import pyassage.models
+import models
 import requests
 
 from datetime import datetime, timedelta
@@ -51,9 +51,12 @@ class CloudPassageAuth(AuthBase):
         self.auth_token_expiry = None
 
     def __call__(self, r):
-        if not self.auth_token_expiry or datetime.utcnow() >= self.auth_token_expiry:
-            log.debug("No valid auth_token, re-authenticating.")
+        if self.auth_token_expiry is None:
             self.authenticate()
+
+        if datetime.utcnow() >= self.auth_token_expiry:
+            self.authenticate()
+            log.debug("No valid auth_token, re-authenticating.")
 
         r.headers['Authorization'] = "Bearer {0}".format(self.auth_token)
         return r
@@ -64,7 +67,7 @@ class CloudPassageAuth(AuthBase):
         log.debug("Authentication URI: %s", url)
 
         log.debug("Client ID: %s, Client Secret (Last 4): ...%s",
-            self.client_id, self.client_secret[-4:])
+                  self.client_id, self.client_secret[-4:])
 
         auth = "{0}:{1}".format(self.client_id, self.client_secret)
         base64_auth = base64.b64encode(auth.encode('ascii'))
@@ -79,4 +82,3 @@ class CloudPassageAuth(AuthBase):
         self.auth_token_expiry = datetime.utcnow() + timedelta(
             seconds=resp_json['expires_in'])
         log.debug("CPAPI Authentication successful")
-
