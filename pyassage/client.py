@@ -6,10 +6,10 @@ Simple Python API client for the CloudPassage API.
 
 import base64
 import logging
-import models
 import requests
 
 from datetime import datetime, timedelta
+from pyassage import models
 from requests.auth import AuthBase
 
 
